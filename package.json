@@ -1,0 +1,38 @@
+{
+  "name": "indigo-and-thread",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack e-commerce platform for Indigo & Thread Indian artisanal clothing",
+  "scripts": {
+    "dev:api": "pnpm --filter @indigo/api dev",
+    "dev:web": "pnpm --filter @indigo/web dev",
+    "dev:admin": "pnpm --filter @indigo/admin dev",
+    "dev": "pnpm --parallel dev",
+    "test:shared": "pnpm --filter @indigo/shared test",
+    "test:api": "pnpm --filter @indigo/api test",
+    "test": "pnpm test:shared && pnpm test:api",
+    "build:shared": "pnpm --filter @indigo/shared build",
+    "build:api": "pnpm --filter @indigo/api build",
+    "build:web": "pnpm --filter @indigo/web build",
+    "build:admin": "pnpm --filter @indigo/admin build",
+    "build": "pnpm build:shared && pnpm --filter @indigo/api build",
+    "db:generate": "pnpm --filter @indigo/api db:generate",
+    "db:push": "pnpm --filter @indigo/api db:push",
+    "db:migrate": "pnpm --filter @indigo/api db:migrate",
+    "db:seed": "pnpm --filter @indigo/api db:seed",
+    "db:studio": "pnpm --filter @indigo/api db:studio",
+    "clean": "node -e \"console.log('Cleaning build artifacts...')\""
+  },
+  "keywords": [
+    "ecommerce",
+    "handloom",
+    "fashion",
+    "india",
+    "nextjs",
+    "express",
+    "prisma",
+    "typescript"
+  ],
+  "author": "Indigo & Thread Team",
+  "license": "UNLICENSED"
+}

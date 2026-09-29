@@ -1,0 +1,118 @@
+name: Indigo & Thread CI Pipeline
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  # ============================================================================
+  # 1. TEST SUITE (Indian GST Rules, Auth Cryptography, Coupons & Health)
+  # ============================================================================
+  test:
+    name: Run Test Suite & Validations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm Store Directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Workspace Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Shared Types & Schemas
+        run: pnpm build:shared
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Execute Monorepo Tests (Shared GST & API Suites)
+        run: pnpm test
+
+  # ============================================================================
+  # 2. MONOREPO PRODUCTION BUILDS (API, Web Storefront, Admin Portal)
+  # ============================================================================
+  build:
+    name: Verify Production Builds
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm Store Directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Shared Package
+        run: pnpm build:shared
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Build Express API
+        run: pnpm build:api
+
+      - name: Build Customer Web Storefront
+        run: pnpm build:web
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: rzp_test_placeholder_key_id
+          NEXT_PUBLIC_STORE_NAME: "Indigo & Thread"
+
+      - name: Build Admin Operations Portal
+        run: pnpm build:admin
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1
+          NEXT_PUBLIC_PORTAL_NAME: "Indigo & Thread - Admin Portal"

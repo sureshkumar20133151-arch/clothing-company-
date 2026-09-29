@@ -1,0 +1,116 @@
+version: "3.8"
+
+services:
+  # ============================================================================
+  # POSTGRESQL DATABASE
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: indigo_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-indigo_thread_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - indigo_network
+
+  # ============================================================================
+  # EXPRESS BACKEND API
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: indigo_api
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/indigo_thread_db?schema=public
+      WEB_APP_URL: http://localhost:3000
+      ADMIN_APP_URL: http://localhost:3001
+      API_URL: http://localhost:5000/api/v1
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-indigo_thread_super_secret_access_key_2026_dev_mode}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-indigo_thread_super_secret_refresh_key_2026_dev_mode}
+      COOKIE_SECRET: ${COOKIE_SECRET:-indigo_thread_cookie_secure_signing_secret_dev}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-rzp_test_placeholder_key_id}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-rzp_test_placeholder_secret}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-placeholder}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-placeholder}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-placeholder}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-resend}
+      RESEND_API_KEY: ${RESEND_API_KEY:-re_placeholder}
+      EMAIL_FROM: ${EMAIL_FROM:-orders@indigothread.in}
+      STORE_NAME: "Indigo & Thread"
+      STORE_GSTIN: "33AAAAA0000A1Z5"
+      STORE_STATE: "Tamil Nadu"
+      STORE_STATE_CODE: "33"
+      DEFAULT_CURRENCY: "INR"
+    ports:
+      - "5000:5000"
+    networks:
+      - indigo_network
+
+  # ============================================================================
+  # NEXT.JS CUSTOMER STOREFRONT
+  # ============================================================================
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: indigo_web
+    restart: always
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1
+      NEXT_PUBLIC_RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-rzp_test_placeholder_key_id}
+      NEXT_PUBLIC_STORE_NAME: "Indigo & Thread"
+    ports:
+      - "3000:3000"
+    networks:
+      - indigo_network
+
+  # ============================================================================
+  # NEXT.JS OPERATIONS & FULFILLMENT PORTAL
+  # ============================================================================
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    container_name: indigo_admin
+    restart: always
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      NEXT_PUBLIC_API_URL: http://localhost:5000/api/v1
+      NEXT_PUBLIC_PORTAL_NAME: "Indigo & Thread - Admin & Operations Portal"
+    ports:
+      - "3001:3001"
+    networks:
+      - indigo_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  indigo_network:
+    driver: bridge
