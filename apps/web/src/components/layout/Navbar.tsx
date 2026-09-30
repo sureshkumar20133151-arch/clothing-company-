@@ -8,10 +8,12 @@ import { useCartStore } from "../../store/useCartStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWishlistStore } from "../../store/useWishlistStore";
 import { formatINR } from "../../lib/utils";
+import { SearchBar } from "./SearchBar";
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const { getTotalQuantity, getSubtotal, openDrawer } = useCartStore();
@@ -98,14 +100,15 @@ export function Navbar() {
 
           {/* Right Action Icons */}
           <div className="flex items-center space-x-3 sm:space-x-5">
-            {/* Search link */}
-            <Link
-              href="/shop"
+            {/* Search Trigger */}
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
               className="p-2 text-indigo-950 hover:text-indigo-700 transition"
               title="Search collection"
+              aria-label="Search collection"
             >
               <Search className="w-5 h-5" />
-            </Link>
+            </button>
 
             {/* Wishlist link */}
             <Link
@@ -162,6 +165,23 @@ export function Navbar() {
             </button>
           </div>
         </div>
+
+        {/* Live Search Drawer / Overlay */}
+        {searchOpen && (
+          <div className="bg-white border-b border-kora-300 shadow-md py-4 px-4 sm:px-6 lg:px-8 animate-in fade-in slide-in-from-top-3 duration-200">
+            <div className="max-w-3xl mx-auto flex items-center gap-3">
+              <div className="flex-1">
+                <SearchBar onClose={() => setSearchOpen(false)} isModal={true} />
+              </div>
+              <button
+                onClick={() => setSearchOpen(false)}
+                className="p-2 text-indigo-900/60 hover:text-indigo-950 rounded-full hover:bg-kora-100 transition text-xs font-semibold shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (

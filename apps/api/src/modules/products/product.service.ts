@@ -5,9 +5,14 @@ import {
   ProductCreateInput,
   ProductUpdateInput,
 } from "@indigo/shared";
+import { RedisService } from "../../services/redis.service";
 
 export class ProductService {
   static async listProducts(filters: ProductFilterQuery) {
+    const cacheKey = `products:list:${Buffer.from(JSON.stringify(filters)).toString("base64")}`;
+    const cached = await RedisService.get(cacheKey);
+    if (cached) return cached;
+
     const page = filters.page || 1;
     const limit = filters.limit || 20;
     const skip = (page - 1) * limit;
@@ -91,7 +96,7 @@ export class ProductService {
 
     const totalPages = Math.ceil(total / limit);
 
-    return {
+    const result = {
       products,
       meta: {
         page,
@@ -100,9 +105,16 @@ export class ProductService {
         totalPages,
       },
     };
+
+    await RedisService.set(cacheKey, result, 180); // 3 min TTL
+    return result;
   }
 
   static async getProductBySlug(slug: string) {
+    const cacheKey = `products:slug:${slug}`;
+    const cached = await RedisService.get(cacheKey);
+    if (cached) return cached;
+
     const product = await prisma.product.findUnique({
       where: { slug },
       include: {
@@ -114,6 +126,7 @@ export class ProductService {
           orderBy: { price: "asc" },
         },
         reviews: {
+          where: { status: "APPROVED" },
           include: {
             user: { select: { id: true, name: true } },
           },
@@ -127,7 +140,31 @@ export class ProductService {
       throw { statusCode: 404, message: "Product not found" };
     }
 
+    await RedisService.set(cacheKey, product, 300); // 5 min TTL
     return product;
+  }
+
+  static async getFeaturedProducts(limit = 8) {
+    const cacheKey = `products:featured:${limit}`;
+    const cached = await RedisService.get(cacheKey);
+    if (cached) return cached;
+
+    const products = await prisma.product.findMany({
+      where: {
+        isFeatured: true,
+        status: ProductStatus.PUBLISHED,
+      },
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        images: { orderBy: { displayOrder: "asc" } },
+        variants: { orderBy: { price: "asc" } },
+      },
+    });
+
+    await RedisService.set(cacheKey, products, 300); // 5 min TTL
+    return products;
   }
 
   static async getProductById(id: string) {
@@ -156,7 +193,7 @@ export class ProductService {
       throw { statusCode: 409, message: "Product slug already exists" };
     }
 
-    return prisma.product.create({
+    const created = await prisma.product.create({
       data: {
         name: input.name,
         slug: input.slug,
@@ -196,6 +233,10 @@ export class ProductService {
         category: true,
       },
     });
+
+    await RedisService.invalidatePattern("products:*");
+    await RedisService.invalidatePattern("search:*");
+    return created;
   }
 
   static async updateProduct(id: string, input: Partial<ProductUpdateInput>) {
@@ -204,7 +245,7 @@ export class ProductService {
       throw { statusCode: 404, message: "Product not found" };
     }
 
-    return prisma.product.update({
+    const updated = await prisma.product.update({
       where: { id },
       data: {
         ...(input.name ? { name: input.name } : {}),
@@ -224,6 +265,10 @@ export class ProductService {
         category: true,
       },
     });
+
+    await RedisService.invalidatePattern("products:*");
+    await RedisService.invalidatePattern("search:*");
+    return updated;
   }
 
   static async deleteProduct(id: string) {
@@ -233,6 +278,8 @@ export class ProductService {
     }
 
     await prisma.product.delete({ where: { id } });
+    await RedisService.invalidatePattern("products:*");
+    await RedisService.invalidatePattern("search:*");
     return true;
   }
 }

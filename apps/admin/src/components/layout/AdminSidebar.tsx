@@ -12,6 +12,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Ticket,
+  MessageSquareQuote,
 } from "lucide-react";
 
 export function AdminSidebar() {
@@ -24,6 +25,7 @@ export function AdminSidebar() {
     { href: "/products/new", label: "Add Handloom Piece", icon: PlusCircle },
     { href: "/inventory", label: "Inventory Matrix", icon: Warehouse },
     { href: "/coupons", label: "Promo Coupons", icon: Ticket },
+    { href: "/reviews", label: "Customer Reviews", icon: MessageSquareQuote },
   ];
 
   return (

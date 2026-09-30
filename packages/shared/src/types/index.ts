@@ -76,12 +76,46 @@ export interface ProductDTO {
   gender: Gender;
   status: ProductStatus;
   isFeatured: boolean;
+  tags?: string[];
+  averageRating?: number;
+  reviewCount?: number;
   categoryId: string;
   category?: CategoryDTO;
   variants: ProductVariantDTO[];
   images: ProductImageDTO[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+export type ReviewStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface ReviewDTO {
+  id: string;
+  productId: string;
+  userId: string;
+  user?: {
+    id: string;
+    name: string;
+  };
+  rating: number;
+  title?: string | null;
+  comment: string;
+  photos?: string[];
+  isVerifiedPurchase: boolean;
+  status: ReviewStatus;
+  helpfulCount: number;
+  adminReply?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SearchSuggestionDTO {
+  id: string;
+  name: string;
+  slug: string;
+  thumbnail: string;
+  price: number;
+  categoryName?: string;
 }
 
 export interface CartItemDTO {

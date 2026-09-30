@@ -65,6 +65,12 @@ enum DiscountType {
   FIXED
 }
 
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id              String         @id @default(cuid())
   email           String         @unique
@@ -133,6 +139,9 @@ model Product {
   gender           Gender
   status           ProductStatus   @default(PUBLISHED)
   isFeatured       Boolean         @default(false)
+  tags             String[]        @default([])
+  averageRating    Float           @default(0)
+  reviewCount      Int             @default(0)
   categoryId       String
   category         Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   createdAt        DateTime        @default(now())
@@ -309,20 +318,45 @@ model Payment {
 }
 
 model Review {
-  id                 String   @id @default(cuid())
+  id                 String              @id @default(cuid())
   productId          String
-  product            Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
   userId             String
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  rating             Int      @default(5)
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating             Int                 @default(5)
   title              String?
   comment            String
-  isVerifiedPurchase Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  photos             String[]            @default([])
+  isVerifiedPurchase Boolean             @default(false)
+  status             ReviewStatus        @default(APPROVED)
+  helpfulCount       Int                 @default(0)
+  adminReply         String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  helpfulVotes       ReviewHelpfulVote[]
 
   @@unique([productId, userId])
   @@index([productId])
+  @@index([status])
+}
+
+model ReviewHelpfulVote {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Coupon {

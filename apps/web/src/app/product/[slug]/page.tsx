@@ -23,6 +23,9 @@ import {
   Heart,
   Star,
   User,
+  ThumbsUp,
+  MessageSquare,
+  Camera,
 } from "lucide-react";
 
 // Fallback product data if server is offline during initial preview
@@ -125,9 +128,11 @@ export default function ProductDetailPage() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewComment, setReviewComment] = useState("");
+  const [reviewPhotos, setReviewPhotos] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
   const [reviewError, setReviewError] = useState("");
+  const [helpfulVotingId, setHelpfulVotingId] = useState<string | null>(null);
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,17 +141,24 @@ export default function ProductDetailPage() {
     setReviewSuccess(false);
 
     try {
+      const photosArray = reviewPhotos
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+
       const res = await api.post("/reviews", {
         productId: product.id,
         rating: reviewRating,
         title: reviewTitle,
         comment: reviewComment,
+        photos: photosArray.length > 0 ? photosArray : undefined,
       });
 
       if (res.success) {
         setReviewSuccess(true);
         setReviewTitle("");
         setReviewComment("");
+        setReviewPhotos("");
         queryClient.invalidateQueries({ queryKey: ["reviews", product.id] });
       } else {
         setReviewError(typeof res.error === "string" ? res.error : "Failed to submit review");
@@ -155,6 +167,20 @@ export default function ProductDetailPage() {
       setReviewError(err.message || "Failed to submit review");
     } finally {
       setSubmittingReview(false);
+    }
+  };
+
+  const handleHelpfulVote = async (reviewId: string) => {
+    setHelpfulVotingId(reviewId);
+    try {
+      const res = await api.post(`/reviews/${reviewId}/helpful`, {});
+      if (res.success) {
+        queryClient.invalidateQueries({ queryKey: ["reviews", product.id] });
+      }
+    } catch (err: any) {
+      // Ignore or handled
+    } finally {
+      setHelpfulVotingId(null);
     }
   };
 
@@ -587,6 +613,57 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
+        {/* Rating Breakdown Bar Chart */}
+        <div className="bg-white p-6 rounded-3xl border border-kora-300 shadow-sm mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            <div className="text-center md:border-r border-kora-200 pr-0 md:pr-6">
+              <div className="text-4xl font-serif font-bold text-indigo-950">
+                {averageRating.toFixed(1)}
+              </div>
+              <div className="flex items-center justify-center gap-1 my-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className={`w-4 h-4 ${
+                      star <= Math.round(averageRating)
+                        ? "fill-amber-400 text-amber-400"
+                        : "text-kora-300"
+                    }`}
+                  />
+                ))}
+              </div>
+              <div className="text-xs text-indigo-900/60 font-medium">
+                Based on {totalReviewsCount} {totalReviewsCount === 1 ? "review" : "reviews"}
+              </div>
+            </div>
+
+            <div className="md:col-span-2 space-y-2">
+              {[5, 4, 3, 2, 1].map((stars) => {
+                const count = reviewsList.filter((r: any) => r.rating === stars).length;
+                const percentage =
+                  totalReviewsCount > 0 ? Math.round((count / totalReviewsCount) * 100) : 0;
+
+                return (
+                  <div key={stars} className="flex items-center gap-3 text-xs">
+                    <span className="w-12 font-semibold text-indigo-950 flex items-center gap-1 shrink-0">
+                      {stars} <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    </span>
+                    <div className="flex-1 h-2.5 bg-kora-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-amber-400 rounded-full transition-all duration-300"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <span className="w-14 text-right text-indigo-900/60 text-[11px] shrink-0 font-medium">
+                      {count} ({percentage}%)
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Reviews List */}
           <div className="lg:col-span-2 space-y-4">
@@ -619,12 +696,20 @@ export default function ProductDetailPage() {
                       <div>
                         <div className="text-xs font-bold text-indigo-950 flex items-center gap-1.5">
                           <span>{rev.user?.name || "Verified Customer"}</span>
-                          <span className="text-[10px] bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
-                            Verified Buyer
-                          </span>
+                          {rev.isVerifiedPurchase !== false && (
+                            <span className="text-[10px] bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
+                              Verified Buyer
+                            </span>
+                          )}
                         </div>
                         <div className="text-[10px] text-indigo-900/50">
-                          {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" }) : ""}
+                          {rev.createdAt
+                            ? new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })
+                            : ""}
                         </div>
                       </div>
                     </div>
@@ -650,6 +735,55 @@ export default function ProductDetailPage() {
                   <p className="text-xs text-indigo-900/80 leading-relaxed">
                     {rev.comment}
                   </p>
+
+                  {/* Customer Submitted Photos */}
+                  {rev.photos && Array.isArray(rev.photos) && rev.photos.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {rev.photos.map((photo: string, idx: number) => (
+                        <a
+                          key={idx}
+                          href={photo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-16 h-16 rounded-xl overflow-hidden border border-kora-200 relative block hover:opacity-90 transition shadow-sm bg-kora-50"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={photo}
+                            alt={`Review photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Admin Artisan Reply */}
+                  {rev.adminReply && (
+                    <div className="mt-3 p-3.5 bg-kora-100/90 rounded-xl border border-kora-300 text-xs">
+                      <div className="flex items-center gap-1.5 font-bold text-indigo-950 mb-1">
+                        <MessageSquare className="w-3.5 h-3.5 text-terracotta-500" />
+                        <span>Artisan Team Response</span>
+                      </div>
+                      <p className="text-indigo-900/80 italic leading-relaxed">
+                        &ldquo;{rev.adminReply}&rdquo;
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Helpful Voting Action */}
+                  <div className="flex items-center justify-between pt-2 border-t border-kora-100 text-xs text-indigo-900/60">
+                    <span className="text-[11px]">Was this feedback helpful?</span>
+                    <button
+                      type="button"
+                      onClick={() => handleHelpfulVote(rev.id)}
+                      disabled={helpfulVotingId === rev.id}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-kora-300 hover:border-indigo-900 hover:bg-kora-50 text-[11px] font-semibold text-indigo-950 transition active:scale-95 disabled:opacity-50"
+                    >
+                      <ThumbsUp className="w-3 h-3 text-indigo-900" />
+                      <span>Helpful ({rev.helpfulCount || 0})</span>
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -667,7 +801,7 @@ export default function ProductDetailPage() {
 
               {reviewSuccess && (
                 <div className="p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl">
-                  ✓ Thank you! Your review has been published.
+                  ✓ Thank you! Your review has been submitted for verification.
                 </div>
               )}
 
@@ -727,6 +861,20 @@ export default function ProductDetailPage() {
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
                       className="w-full text-xs px-3 py-2 rounded-xl border border-kora-300 focus:outline-none focus:border-indigo-950 leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-indigo-950 mb-1 flex items-center gap-1">
+                      <Camera className="w-3.5 h-3.5 text-indigo-900/60" />
+                      <span>Photo URLs (comma-separated, optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://images.unsplash.com/..., https://..."
+                      value={reviewPhotos}
+                      onChange={(e) => setReviewPhotos(e.target.value)}
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-kora-300 focus:outline-none focus:border-indigo-950"
                     />
                   </div>
 

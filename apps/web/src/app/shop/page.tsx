@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { ProductCard } from "../../components/products/ProductCard";
 import { ProductDTO, CLOTHING_SIZES, GENDERS } from "@indigo/shared";
-import { Filter, SlidersHorizontal, Loader2, Sparkles } from "lucide-react";
+import { Filter, SlidersHorizontal, Loader2, Sparkles, Search, X } from "lucide-react";
 
 // Curated fallback products for immediate zero-friction preview even before DB connection
 const DEMO_PRODUCTS: ProductDTO[] = [
@@ -183,21 +184,28 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const initialGender = searchParams.get("gender") || "";
   const initialCategory = searchParams.get("category") || "";
+  const initialQuery = searchParams.get("q") || "";
 
+  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
   const [selectedGender, setSelectedGender] = useState<string>(initialGender);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [priceBracket, setPriceBracket] = useState<string>("ALL");
   const [sortBy, setSortBy] = useState<string>("newest");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
+  useEffect(() => {
+    setSearchQuery(searchParams.get("q") || "");
+  }, [searchParams]);
+
   // Fetch real data from API with fallback to demo products
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ["products", selectedGender, selectedSize, priceBracket, sortBy, initialCategory],
+    queryKey: ["products", selectedGender, selectedSize, priceBracket, sortBy, initialCategory, searchQuery],
     queryFn: async () => {
       const params: Record<string, any> = { sortBy };
       if (selectedGender) params.gender = selectedGender;
       if (selectedSize) params.size = selectedSize;
       if (initialCategory) params.category = initialCategory;
+      if (searchQuery) params.q = searchQuery;
 
       if (priceBracket === "UNDER_1000") {
         params.maxPrice = 1000;
@@ -208,6 +216,9 @@ function ShopContent() {
         params.minPrice = 2501;
       }
 
+      if (searchQuery) {
+        return api.get<ProductDTO[]>("/search", params);
+      }
       return api.get<ProductDTO[]>("/products", params);
     },
     staleTime: 60 * 1000,
@@ -217,6 +228,15 @@ function ShopContent() {
 
   // Filter client-side if fallback data is in use
   const filteredProducts = products.filter((p) => {
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const match =
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        (p.craftStory && p.craftStory.toLowerCase().includes(q)) ||
+        (p.category?.name && p.category.name.toLowerCase().includes(q));
+      if (!match) return false;
+    }
     if (selectedGender && p.gender !== selectedGender && p.gender !== "UNISEX") return false;
     if (selectedSize && !p.variants.some((v) => v.size === selectedSize)) return false;
     const minPrice = Math.min(...p.variants.map((v) => v.price));
@@ -236,12 +256,29 @@ function ShopContent() {
             Pure Indian Handloom & Natural Dyes
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif font-bold text-indigo-950">
-            {selectedGender === "MEN"
+            {searchQuery
+              ? `Search: \u201C${searchQuery}\u201D`
+              : selectedGender === "MEN"
               ? "Men's Artisanal Handloom"
               : selectedGender === "WOMEN"
               ? "Women's Kurtas & Sarees"
               : "All Artisanal Apparel"}
           </h1>
+          {searchQuery && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-indigo-900/60 font-medium">Filtering by search query:</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-semibold">
+                &ldquo;{searchQuery}&rdquo;
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="hover:text-rose-600 transition"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </span>
+            </div>
+          )}
           <p className="text-sm text-indigo-900/70 mt-1 max-w-xl">
             Sourced directly from certified handloom weaving clusters in Tamil Nadu, Bengal, and Andhra Pradesh.
           </p>
@@ -375,23 +412,101 @@ function ShopContent() {
               <span className="text-sm font-medium">Fetching artisanal handloom pieces...</span>
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-kora-300 p-12 text-center">
-              <h3 className="text-base font-serif font-bold text-indigo-950 mb-1">
-                No items match your filter criteria
+            <div className="bg-white rounded-3xl border border-kora-300 p-8 sm:p-12 text-center max-w-xl mx-auto shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-800 mx-auto flex items-center justify-center mb-4">
+                <Search className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-serif font-bold text-indigo-950 mb-2">
+                {searchQuery
+                  ? `No handloom garments found for \u201C${searchQuery}\u201D`
+                  : "No items match your filter criteria"}
               </h3>
-              <p className="text-xs text-indigo-900/70 max-w-sm mx-auto mb-6">
-                Try resetting size or price filters to explore our full handloom inventory.
+              <p className="text-xs text-indigo-900/70 max-w-md mx-auto mb-6 leading-relaxed">
+                {searchQuery ? (
+                  <span>
+                    Did you mean:{" "}
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("indigo")}
+                      className="text-terracotta-600 font-semibold underline underline-offset-2 hover:text-terracotta-700"
+                    >
+                      indigo
+                    </button>
+                    ,{" "}
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("jamdani")}
+                      className="text-terracotta-600 font-semibold underline underline-offset-2 hover:text-terracotta-700"
+                    >
+                      jamdani
+                    </button>
+                    ,{" "}
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("cotton")}
+                      className="text-terracotta-600 font-semibold underline underline-offset-2 hover:text-terracotta-700"
+                    >
+                      cotton
+                    </button>
+                    , or{" "}
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("saree")}
+                      className="text-terracotta-600 font-semibold underline underline-offset-2 hover:text-terracotta-700"
+                    >
+                      saree
+                    </button>
+                    ? Check for spelling or explore our popular handloom collections below.
+                  </span>
+                ) : (
+                  "Try resetting size, category, or price filters to explore our full artisanal handloom inventory."
+                )}
               </p>
-              <button
-                onClick={() => {
-                  setSelectedGender("");
-                  setSelectedSize("");
-                  setPriceBracket("ALL");
-                }}
-                className="bg-indigo-950 text-white text-xs font-semibold px-6 py-2.5 rounded-full hover:bg-indigo-900 transition"
-              >
-                Clear All Filters
-              </button>
+
+              {/* Recommended Categories */}
+              <div className="border-t border-kora-200 pt-5 mt-2">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-900/50 mb-3">
+                  Recommended Collections
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <Link
+                    href="/shop?category=mens-handloom-shirts"
+                    onClick={() => setSearchQuery("")}
+                    className="text-xs font-semibold px-4 py-2 rounded-full bg-kora-100 hover:bg-kora-200 text-indigo-950 transition"
+                  >
+                    Men&apos;s Handloom Shirts
+                  </Link>
+                  <Link
+                    href="/shop?category=womens-handloom-kurtas"
+                    onClick={() => setSearchQuery("")}
+                    className="text-xs font-semibold px-4 py-2 rounded-full bg-kora-100 hover:bg-kora-200 text-indigo-950 transition"
+                  >
+                    Women&apos;s Jamdani Kurtas
+                  </Link>
+                  <Link
+                    href="/shop?category=bengal-salem-cotton-sarees"
+                    onClick={() => setSearchQuery("")}
+                    className="text-xs font-semibold px-4 py-2 rounded-full bg-kora-100 hover:bg-kora-200 text-indigo-950 transition"
+                  >
+                    Salem &amp; Bengal Sarees
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedGender("");
+                    setSelectedSize("");
+                    setPriceBracket("ALL");
+                    setSearchQuery("");
+                  }}
+                  className="bg-indigo-950 text-white text-xs font-semibold px-6 py-2.5 rounded-full hover:bg-indigo-900 transition shadow"
+                >
+                  Clear All Filters &amp; Search
+                </button>
+              </div>
             </div>
           ) : (
             <div>

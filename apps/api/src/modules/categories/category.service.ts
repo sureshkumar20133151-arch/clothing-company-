@@ -1,8 +1,13 @@
 import { prisma } from "../../config/prisma";
 import { CategoryInput, Gender } from "@indigo/shared";
+import { RedisService } from "../../services/redis.service";
 
 export class CategoryService {
   static async listCategories(gender?: string) {
+    const cacheKey = `categories:all:${gender ? gender.toUpperCase() : "all"}`;
+    const cached = await RedisService.get(cacheKey);
+    if (cached) return cached;
+
     const where: any = { isActive: true };
     if (gender && ["MEN", "WOMEN", "UNISEX"].includes(gender.toUpperCase())) {
       where.OR = [
@@ -11,7 +16,7 @@ export class CategoryService {
       ];
     }
 
-    return prisma.category.findMany({
+    const categories = await prisma.category.findMany({
       where,
       orderBy: { displayOrder: "asc" },
       include: {
@@ -20,6 +25,9 @@ export class CategoryService {
         },
       },
     });
+
+    await RedisService.set(cacheKey, categories, 300); // 5 min TTL
+    return categories;
   }
 
   static async getBySlug(slug: string) {
@@ -46,7 +54,7 @@ export class CategoryService {
       throw { statusCode: 409, message: "Category slug already exists" };
     }
 
-    return prisma.category.create({
+    const created = await prisma.category.create({
       data: {
         name: input.name,
         slug: input.slug,
@@ -57,5 +65,8 @@ export class CategoryService {
         isActive: input.isActive,
       },
     });
+
+    await RedisService.invalidatePattern("categories:*");
+    return created;
   }
 }

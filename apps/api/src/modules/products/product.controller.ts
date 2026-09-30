@@ -18,6 +18,16 @@ export class ProductController {
     }
   }
 
+  static async getFeatured(req: Request, res: Response, next: NextFunction) {
+    try {
+      const limit = req.query.limit ? Number(req.query.limit) : 8;
+      const products = await ProductService.getFeaturedProducts(limit);
+      return ApiResponse.success(res, products, "Featured products fetched successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getBySlug(req: Request, res: Response, next: NextFunction) {
     try {
       const product = await ProductService.getProductBySlug(req.params.slug);

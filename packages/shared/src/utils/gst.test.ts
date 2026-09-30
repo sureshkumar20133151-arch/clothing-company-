@@ -5,7 +5,6 @@ import {
   calculateItemGST,
   calculateOrderTotals,
 } from "./gst";
-import { GST_CONSTANTS } from "../constants";
 
 describe("Indian Apparel GST Calculations", () => {
   it("should apply 5% GST for garments priced <= ₹1,000", () => {
