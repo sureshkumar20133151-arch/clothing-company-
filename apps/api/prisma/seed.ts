@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { PrismaClient, Role, Gender, ClothingSize, ProductStatus, DiscountType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
