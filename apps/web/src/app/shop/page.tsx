@@ -230,6 +230,7 @@ function ShopContent() {
       return api.get<ProductDTO[]>("/products", params);
     },
     staleTime: 60 * 1000,
+    retry: 0,
   });
 
   const products: ProductDTO[] = Array.isArray(apiData?.data) ? apiData.data : DEMO_PRODUCTS;

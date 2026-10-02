@@ -34,11 +34,16 @@ export async function fetchApi<T = any>(
   };
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
     const response = await fetch(url, {
       headers: defaultHeaders,
       credentials: "include", // Essential for httpOnly cookies
+      signal: controller.signal,
       ...restOptions,
     });
+    clearTimeout(timeoutId);
 
     const data: ApiResponse<T> = await response.json();
 
