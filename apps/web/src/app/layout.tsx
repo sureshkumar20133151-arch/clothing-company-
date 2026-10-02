@@ -4,6 +4,8 @@ import { QueryProvider } from "../providers/query-provider";
 import { Navbar } from "../components/layout/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { CartDrawer } from "../components/cart/CartDrawer";
+import { FloatingWhatsApp } from "../components/layout/FloatingWhatsApp";
+import { CouponNotification } from "../components/layout/CouponNotification";
 
 export const metadata: Metadata = {
   title: "Indigo & Thread | Artisanal Handloom Clothing India",
@@ -18,12 +20,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-kora-100 text-indigo-950 antialiased flex flex-col">
+      <body className="min-h-screen bg-[#faf8f5] text-indigo-950 antialiased flex flex-col font-sans selection:bg-[#780016] selection:text-white">
         <QueryProvider>
           <Navbar />
           <div className="flex-1">{children}</div>
           <Footer />
           <CartDrawer />
+          <FloatingWhatsApp />
+          <CouponNotification />
         </QueryProvider>
       </body>
     </html>

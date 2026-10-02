@@ -185,34 +185,42 @@ function ShopContent() {
   const initialGender = searchParams.get("gender") || "";
   const initialCategory = searchParams.get("category") || "";
   const initialQuery = searchParams.get("q") || "";
+  const isFeaturedFilter = searchParams.get("featured") === "true";
+  const isOnSaleFilter = searchParams.get("onSale") === "true";
+  const initialPriceBracket = searchParams.get("priceBracket") || "ALL";
+  const initialSort = searchParams.get("sort") || "newest";
 
   const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
   const [selectedGender, setSelectedGender] = useState<string>(initialGender);
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [priceBracket, setPriceBracket] = useState<string>("ALL");
-  const [sortBy, setSortBy] = useState<string>("newest");
+  const [priceBracket, setPriceBracket] = useState<string>(initialPriceBracket);
+  const [sortBy, setSortBy] = useState<string>(initialSort);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   useEffect(() => {
     setSearchQuery(searchParams.get("q") || "");
+    if (searchParams.get("gender")) setSelectedGender(searchParams.get("gender") || "");
+    if (searchParams.get("priceBracket")) setPriceBracket(searchParams.get("priceBracket") || "ALL");
+    if (searchParams.get("sort")) setSortBy(searchParams.get("sort") || "newest");
   }, [searchParams]);
 
   // Fetch real data from API with fallback to demo products
   const { data: apiData, isLoading } = useQuery({
-    queryKey: ["products", selectedGender, selectedSize, priceBracket, sortBy, initialCategory, searchQuery],
+    queryKey: ["products", selectedGender, selectedSize, priceBracket, sortBy, initialCategory, searchQuery, isFeaturedFilter, isOnSaleFilter],
     queryFn: async () => {
       const params: Record<string, any> = { sortBy };
       if (selectedGender) params.gender = selectedGender;
       if (selectedSize) params.size = selectedSize;
       if (initialCategory) params.category = initialCategory;
       if (searchQuery) params.q = searchQuery;
+      if (isFeaturedFilter) params.isFeatured = true;
 
       if (priceBracket === "UNDER_1000") {
         params.maxPrice = 1000;
-      } else if (priceBracket === "1000_2500") {
+      } else if (priceBracket === "1000_2000" || priceBracket === "1000_2500") {
         params.minPrice = 1001;
         params.maxPrice = 2500;
-      } else if (priceBracket === "ABOVE_2500") {
+      } else if (priceBracket === "ABOVE_2500" || priceBracket === "ABOVE_3000") {
         params.minPrice = 2501;
       }
 
@@ -226,8 +234,19 @@ function ShopContent() {
 
   const products: ProductDTO[] = Array.isArray(apiData?.data) ? apiData.data : DEMO_PRODUCTS;
 
-  // Filter client-side if fallback data is in use
+  // Filter client-side if fallback data is in use or extra client params
   const filteredProducts = products.filter((p) => {
+    if (isFeaturedFilter && !p.isFeatured) return false;
+    if (isOnSaleFilter) {
+      const hasDiscount = p.variants.some((v) => v.mrp && v.mrp > v.price);
+      if (!hasDiscount) return false;
+    }
+    if (initialCategory) {
+      const matchCat =
+        p.category?.slug === initialCategory ||
+        (p.category?.name && p.category.name.toLowerCase().includes(initialCategory.toLowerCase()));
+      if (!matchCat) return false;
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const match =
@@ -241,8 +260,8 @@ function ShopContent() {
     if (selectedSize && !p.variants.some((v) => v.size === selectedSize)) return false;
     const minPrice = Math.min(...p.variants.map((v) => v.price));
     if (priceBracket === "UNDER_1000" && minPrice > 1000) return false;
-    if (priceBracket === "1000_2500" && (minPrice < 1000 || minPrice > 2500)) return false;
-    if (priceBracket === "ABOVE_2500" && minPrice < 2500) return false;
+    if ((priceBracket === "1000_2500" || priceBracket === "1000_2000") && (minPrice < 1000 || minPrice > 2500)) return false;
+    if ((priceBracket === "ABOVE_2500" || priceBracket === "ABOVE_3000") && minPrice < 2500) return false;
     return true;
   });
 
