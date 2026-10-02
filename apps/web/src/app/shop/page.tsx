@@ -8,6 +8,7 @@ import { api } from "../../lib/api";
 import { ProductCard } from "../../components/products/ProductCard";
 import { ProductDTO, CLOTHING_SIZES, GENDERS } from "@indigo/shared";
 import { Filter, SlidersHorizontal, Loader2, Sparkles, Search, X } from "lucide-react";
+import { CATALOG_PRODUCTS } from "../../data/catalog";
 
 // Curated fallback products for immediate zero-friction preview even before DB connection
 const DEMO_PRODUCTS: ProductDTO[] = [
@@ -233,7 +234,7 @@ function ShopContent() {
     retry: 0,
   });
 
-  const products: ProductDTO[] = Array.isArray(apiData?.data) ? apiData.data : DEMO_PRODUCTS;
+  const products: ProductDTO[] = Array.isArray(apiData?.data) && apiData.data.length > 0 ? apiData.data : CATALOG_PRODUCTS;
 
   // Filter client-side if fallback data is in use or extra client params
   const filteredProducts = products.filter((p) => {
@@ -426,7 +427,7 @@ function ShopContent() {
 
         {/* Product Grid */}
         <section className="md:col-span-3">
-          {isLoading ? (
+          {isLoading && filteredProducts.length === 0 ? (
             <div className="flex items-center justify-center py-20 text-indigo-900">
               <Loader2 className="w-8 h-8 animate-spin mr-3 text-terracotta-500" />
               <span className="text-sm font-medium">Fetching artisanal handloom pieces...</span>

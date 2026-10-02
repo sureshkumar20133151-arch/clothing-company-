@@ -12,6 +12,22 @@ const nextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+      },
+      {
+        protocol: "https",
+        hostname: "naachiyars.in",
+      },
+      {
+        protocol: "https",
+        hostname: "www.thescmsilk.in",
+      },
+      {
+        protocol: "https",
+        hostname: "www.pothys.com",
+      },
     ],
   },
 };

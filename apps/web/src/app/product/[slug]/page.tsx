@@ -10,6 +10,7 @@ import { useWishlistStore } from "../../../store/useWishlistStore";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { formatINR, calculateDiscountPercent } from "../../../lib/utils";
 import { ProductDTO, ProductVariantDTO, ClothingSize } from "@indigo/shared";
+import { CATALOG_PRODUCTS } from "../../../data/catalog";
 import {
   ShoppingBag,
   Truck,
@@ -105,10 +106,11 @@ export default function ProductDetailPage() {
     queryFn: async () => {
       return api.get<ProductDTO>(`/products/slug/${slug}`);
     },
-    retry: 1,
+    retry: 0,
   });
 
-  const product: ProductDTO = apiData?.data || FALLBACK_PRODUCT;
+  const catalogMatch = CATALOG_PRODUCTS.find((p) => p.slug === slug || p.id === slug);
+  const product: ProductDTO = apiData?.data || catalogMatch || FALLBACK_PRODUCT;
   const inWishlist = isInWishlist(product.id);
 
   // Reviews Query

@@ -13,49 +13,58 @@ import {
   Flame,
   Check,
   ChevronRight,
+  ChevronLeft,
   Star,
   Copy,
 } from "lucide-react";
 import { useCartStore } from "../store/useCartStore";
+import { CATALOG_PRODUCTS } from "../data/catalog";
+import { ProductDTO } from "@indigo/shared";
 
 // Quick Circular Category Bubbles (Instagram Highlights style)
 const CIRCULAR_STORIES = [
   {
     title: "New In",
-    tag: "Trending",
-    img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&q=80",
+    tag: "Trending 2026",
+    img: "https://naachiyars.in/cdn/shop/files/Nachiyars_banner1.jpg?v=1788243947",
     href: "/shop?sort=newest",
     badge: "NEW",
   },
   {
     title: "Silk Sarees",
-    tag: "Salem & Bengal",
-    img: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=400&q=80",
+    tag: "Banarasi & Soft Silk",
+    img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/saree9copy.jpg?v=1757064390",
     href: "/shop?category=bengal-salem-cotton-sarees",
   },
   {
-    title: "Men's Shirts",
-    tag: "Organic Cotton",
-    img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=400&q=80",
-    href: "/shop?category=mens-handloom-shirts",
+    title: "Men's Dhoti",
+    tag: "Wedding Border",
+    img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N1939805-A.jpg?v=1742045506",
+    href: "/shop?gender=MEN",
   },
   {
-    title: "A-Line Kurtas",
-    tag: "Jamdani Weaves",
-    img: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=400&q=80",
-    href: "/shop?category=womens-handloom-kurtas",
+    title: "Cotton Sarees",
+    tag: "Shibori & Chettinad",
+    img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2098694-B_2.jpg?v=1770728852",
+    href: "/shop?category=bengal-salem-cotton-sarees",
   },
   {
-    title: "Under ₹1000",
-    tag: "5% GST Slabs",
-    img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=400&q=80",
+    title: "Salwar Suits",
+    tag: "Pure Chettinad",
+    img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2225087-C_3.jpg?v=1756464217",
+    href: "/shop?gender=WOMEN",
+  },
+  {
+    title: "Under ₹999",
+    tag: "Budget Slabs",
+    img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/saree14copy.jpg?v=1757064404",
     href: "/shop?priceBracket=UNDER_1000",
-    badge: "₹890",
+    badge: "DEAL",
   },
   {
     title: "Flat 10% Off",
     tag: "Code: WELCOME10",
-    img: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=400&q=80",
+    img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2152875-A_7.jpg?v=1762254887",
     href: "/shop?onSale=true",
     badge: "OFFER",
   },
@@ -125,13 +134,108 @@ const FEATURED_PRODUCTS = [
   },
 ];
 
+// Hero Carousel Slides using authentic banners from Theni Anantham, SCM Silk, and Naachiyars
+const HERO_SLIDES = [
+  {
+    badge: "✦ THE WEDDING & FESTIVE COLLECTION ✦",
+    title: "PREMIUM SILK COLLECTION",
+    italicSub: "Grandeur of Heritage Weaves",
+    tagline: "✦ HANDCRAFTED SOUTH INDIAN SILKS & BRIDAL WEAR ✦",
+    offerTitle: "FLAT 10% OFF",
+    offerSub: "USE CODE: WELCOME10",
+    primaryCta: { label: "Shop Silk Sarees", href: "/shop?category=bengal-salem-cotton-sarees" },
+    secondaryCta: { label: "Explore Men's Dhoti", href: "/shop?gender=MEN" },
+    bannerBg: "https://www.thescmsilk.in/media/wysiwyg/WEB_BANNER_02_1.jpg",
+    model1: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/saree9copy.jpg?v=1757064390",
+      tag: "BANARAS SOFTY",
+    },
+    model2: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2152875-A_7.jpg?v=1762254887",
+      tag: "SEMI SILK RAINBOW",
+    },
+    model3: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N1939805-A.jpg?v=1742045506",
+      tag: "COPPER TISSUE DHOTI",
+    },
+    model4: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2225087-C_3.jpg?v=1756464217",
+      tag: "CHETTINAD CHUDI",
+    },
+  },
+  {
+    badge: "✦ WOMEN'S CELEBRATION WEAR ✦",
+    title: "KANCHI & PURE TISSUE SAREES",
+    italicSub: "Grace in Every Fold",
+    tagline: "✦ TIMELESS DESIGNS • DIRECT FROM LOOMS ✦",
+    offerTitle: "FLAT 10% OFF",
+    offerSub: "EXCLUSIVE ONLINE OFFER",
+    primaryCta: { label: "View Bridal Sarees", href: "/shop?category=bengal-salem-cotton-sarees" },
+    secondaryCta: { label: "Shop Under ₹1,000", href: "/shop?priceBracket=UNDER_1000" },
+    bannerBg: "https://www.thescmsilk.in/media/weltpixel/owlcarouselslider/images/w/o/womens_web_banner_july_2026.jpg",
+    model1: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N1935574-A_5.jpg?v=1751027305",
+      tag: "BRIDAL TISSUE SILK",
+    },
+    model2: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2911649-J_2.jpg?v=1780568385",
+      tag: "FLORAL VINES ZARI",
+    },
+    model3: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2650592-A_11.jpg?v=1768480961",
+      tag: "SEMI TUSSAR WEAVE",
+    },
+    model4: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2914009-A_9_-Copy.jpg?v=1776688678",
+      tag: "JAIPUR HAND BLOCK",
+    },
+  },
+  {
+    badge: "✦ MEN'S TRADITIONAL ETHNIC WEAR ✦",
+    title: "WEDDING DHOTIS & SHIRTS",
+    italicSub: "Royal Southern Splendor",
+    tagline: "✦ TRADITIONAL ZARI BORDERS • PURE ART SILK ✦",
+    offerTitle: "SPECIAL COMBO",
+    offerSub: "DHOTI + SHIRT MATCHING",
+    primaryCta: { label: "Explore Men's Wear", href: "/shop?gender=MEN" },
+    secondaryCta: { label: "New Arrivals", href: "/shop?sort=newest" },
+    bannerBg: "https://www.thescmsilk.in/media/weltpixel/owlcarouselslider/images/m/e/mens_web_banner_july_2026.jpg",
+    model1: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N1944701-A.jpg?v=1742045511",
+      tag: "GOLD BORDER DHOTI",
+    },
+    model2: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N1944704-A_4.jpg?v=1742045505",
+      tag: "DARK GOLD SILK",
+    },
+    model3: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/N2098694-B_2.jpg?v=1770728852",
+      tag: "MUMBAI SOFT COTTON",
+    },
+    model4: {
+      img: "https://cdn.shopify.com/s/files/1/0851/9578/4511/files/saree14copy.jpg?v=1757064404",
+      tag: "DIGITAL SOFTY SILK",
+    },
+  },
+];
+
 export default function HomePage() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const { addItem, openDrawer } = useCartStore();
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const slide = HERO_SLIDES[currentSlide];
 
   const handleCopy = () => {
     navigator.clipboard.writeText("WELCOME10");
@@ -146,29 +250,32 @@ export default function HomePage() {
     }
   };
 
-  const handleQuickAdd = (p: (typeof FEATURED_PRODUCTS)[0]) => {
+  const handleQuickAdd = (p: ProductDTO) => {
+    const variant = p.variants[0];
     addItem({
-      variantId: `${p.id}_v_default`,
+      variantId: variant ? variant.id : `${p.id}_v_default`,
       productId: p.id,
       productName: p.name,
       productSlug: p.slug,
-      price: p.price,
-      mrp: p.mrp,
-      size: "M" as any,
-      colorName: "Artisanal",
-      image: p.img,
+      price: variant ? variant.price : 1499,
+      mrp: variant ? variant.mrp : 1999,
+      size: (variant ? variant.size : "M") as any,
+      colorName: variant ? variant.colorName : "Artisanal",
+      image: p.images[0]?.url || "",
       quantity: 1,
-      maxStock: 10,
+      maxStock: variant ? variant.stock : 10,
     });
     openDrawer();
   };
 
-  const filteredFeatured = FEATURED_PRODUCTS.filter((p) => {
-    if (activeTab === "sarees") return p.category.includes("Sarees");
-    if (activeTab === "men") return p.category.includes("Men");
-    if (activeTab === "kurtas") return p.category.includes("Kurtas") || p.category.includes("Overlays");
+  const allDisplayProducts: ProductDTO[] = CATALOG_PRODUCTS;
+
+  const filteredFeatured = allDisplayProducts.filter((p) => {
+    if (activeTab === "sarees") return p.category?.slug.includes("sarees") || p.name.toLowerCase().includes("saree");
+    if (activeTab === "men") return p.gender === "MEN";
+    if (activeTab === "kurtas") return p.category?.slug.includes("kurtas") || p.name.toLowerCase().includes("chudi") || p.name.toLowerCase().includes("suit");
     return true;
-  });
+  }).slice(0, 8);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#faf8f5]">
@@ -207,63 +314,80 @@ export default function HomePage() {
       </section>
 
       {/* ============================================================== */}
-      {/* 2. GRAND HERO BANNER (Directly Modeled from Theni Anantham Screenshot) */}
+      {/* 2. GRAND HERO BANNER SLIDER (Themed from Theni Anantham & Pothys) */}
       {/* ============================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-[#200008] via-[#4a020f] to-[#200008] text-white py-12 sm:py-20 px-4 sm:px-6 lg:px-8 border-b-4 border-amber-400">
-        {/* Subtle royal background pattern */}
+      <section className="relative overflow-hidden bg-[#200008] text-white py-10 sm:py-16 px-4 sm:px-6 lg:px-8 border-b-4 border-amber-400 transition-all duration-700">
+        {/* Background Image with Deep Overlay */}
         <div
-          className="absolute inset-0 opacity-15 pointer-events-none mix-blend-overlay"
-          style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, #b3543b 0%, transparent 50%), radial-gradient(circle at 80% 50%, #d4af37 0%, transparent 50%)`,
-          }}
+          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-20 filter blur-[1px]"
+          style={{ backgroundImage: `url(${slide.bannerBg})` }}
         />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1c0006] via-[#3d000c]/90 to-[#1c0006]/95 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left Model Showcase (Indian models in wine pattu saree & teal anarkali) */}
+          {/* Left Model Showcase (Real reference models) */}
           <div className="hidden lg:grid col-span-3 grid-cols-2 gap-3">
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/40 transform -rotate-1 hover:rotate-0 transition duration-500">
-              <img
-                src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80"
-                alt="Regal Wine Silk Saree"
-                className="w-full h-72 object-cover"
-              />
+            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform -rotate-1 hover:rotate-0 transition duration-500 group bg-black/40">
+              <div className="w-full h-72 overflow-hidden">
+                <img
+                  src={slide.model1.img}
+                  alt={slide.model1.tag}
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                />
+              </div>
               <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                SALEM TEMPLE SILK
+                {slide.model1.tag}
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/40 transform rotate-2 hover:rotate-0 transition duration-500 mt-6">
-              <img
-                src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80"
-                alt="Teal Jamdani Ethnic Wear"
-                className="w-full h-72 object-cover"
-              />
+            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform rotate-2 hover:rotate-0 transition duration-500 mt-6 group bg-black/40">
+              <div className="w-full h-72 overflow-hidden">
+                <img
+                  src={slide.model2.img}
+                  alt={slide.model2.tag}
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                />
+              </div>
               <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                JAMDANI WEAVES
+                {slide.model2.tag}
               </div>
             </div>
           </div>
 
           {/* Center Main Headline & Grand Offer Emblem (Like Theni Anantham) */}
           <div className="col-span-1 lg:col-span-6 text-center flex flex-col items-center">
+            {/* Slider Switcher Dots */}
+            <div className="flex items-center gap-2 mb-3">
+              {HERO_SLIDES.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    currentSlide === idx ? "w-8 bg-amber-400" : "w-2 bg-white/40 hover:bg-white/70"
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+
             {/* Upper Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-300 text-xs font-bold tracking-widest uppercase mb-4 shadow">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>✦ NEW ARRIVALS ✦</span>
+              <span>{slide.badge}</span>
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             </div>
 
             {/* Regal Heading */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight leading-tight text-white uppercase drop-shadow-md">
-              PREMIUM COLLECTION
+              {slide.title}
             </h1>
 
             {/* Cursive Subtitle */}
             <p className="font-serif italic text-2xl sm:text-3xl text-amber-200 mt-1 mb-2 tracking-wide font-normal">
-              Elegance Redefined
+              {slide.italicSub}
             </p>
 
             <p className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-white/80 mb-6">
-              ✦ ETHNIC WEAR FOR EVERY OCCASION ✦
+              {slide.tagline}
             </p>
 
             {/* Center Royal Gold / Maroon Discount Badge (Exact copy of screenshot badge) */}
@@ -273,7 +397,7 @@ export default function HomePage() {
               </div>
 
               <div className="text-3xl sm:text-4xl font-serif font-black text-amber-300 tracking-tight my-1">
-                FLAT <span className="text-white text-4xl sm:text-5xl">10%</span> OFF
+                {slide.offerTitle}
               </div>
 
               <div className="mt-3 flex items-center justify-center gap-2">
@@ -297,43 +421,63 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
+            {/* Action Buttons & Prev/Next Arrows */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
+              <button
+                onClick={() => setCurrentSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1))}
+                className="w-10 h-10 rounded-full border border-white/30 bg-black/40 hover:bg-[#780016] text-white flex items-center justify-center transition"
+                title="Previous Slide"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
               <Link
-                href="/shop?sort=newest"
+                href={slide.primaryCta.href}
                 className="bg-amber-400 text-indigo-950 hover:bg-amber-300 px-8 py-3.5 rounded-full font-bold transition text-xs sm:text-sm tracking-wider uppercase inline-flex items-center gap-2 shadow-xl hover:scale-105 active:scale-95"
               >
-                Shop New Arrivals <ArrowRight className="w-4 h-4" />
+                {slide.primaryCta.label} <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/shop?category=bengal-salem-cotton-sarees"
+                href={slide.secondaryCta.href}
                 className="bg-white/10 hover:bg-white/20 border-2 border-white/40 text-white px-8 py-3.5 rounded-full font-bold transition text-xs sm:text-sm tracking-wider uppercase inline-flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
               >
-                Explore Sarees <ArrowRight className="w-4 h-4" />
+                {slide.secondaryCta.label} <ArrowRight className="w-4 h-4" />
               </Link>
+
+              <button
+                onClick={() => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length)}
+                className="w-10 h-10 rounded-full border border-white/30 bg-black/40 hover:bg-[#780016] text-white flex items-center justify-center transition"
+                title="Next Slide"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
           </div>
 
-          {/* Right Model Showcase (Golden anarkali & navy festive models) */}
+          {/* Right Model Showcase (Real reference models) */}
           <div className="hidden lg:grid col-span-3 grid-cols-2 gap-3">
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/40 transform -rotate-2 hover:rotate-0 transition duration-500">
-              <img
-                src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80"
-                alt="Golden Mustard Festive Kurta"
-                className="w-full h-72 object-cover"
-              />
+            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform -rotate-2 hover:rotate-0 transition duration-500 group bg-black/40">
+              <div className="w-full h-72 overflow-hidden">
+                <img
+                  src={slide.model3.img}
+                  alt={slide.model3.tag}
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                />
+              </div>
               <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                GOLDEN FESTIVE
+                {slide.model3.tag}
               </div>
             </div>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/40 transform rotate-1 hover:rotate-0 transition duration-500 mt-6">
-              <img
-                src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80"
-                alt="Navy Royal Kurta"
-                className="w-full h-72 object-cover"
-              />
+            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform rotate-1 hover:rotate-0 transition duration-500 mt-6 group bg-black/40">
+              <div className="w-full h-72 overflow-hidden">
+                <img
+                  src={slide.model4.img}
+                  alt={slide.model4.tag}
+                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                />
+              </div>
               <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                MEN&apos;S PIT-LOOM
+                {slide.model4.tag}
               </div>
             </div>
           </div>
@@ -384,22 +528,22 @@ export default function HomePage() {
             className="group relative rounded-3xl overflow-hidden aspect-[16/10] sm:aspect-[4/3] bg-indigo-950 shadow-lg border border-kora-300 block"
           >
             <img
-              src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=80"
+              src="https://www.thescmsilk.in/media/weltpixel/owlcarouselslider/images/m/e/mens_web_banner_july_2026.jpg"
               alt="Cotton Collection and Everyday Style"
-              className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-80"
+              className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-90"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-indigo-950 via-indigo-950/40 to-transparent flex flex-col justify-end p-6 sm:p-10 text-white">
               <span className="inline-block bg-amber-400 text-indigo-950 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-fit mb-2">
                 COTTON COLLECTION • EVERYDAY STYLE
               </span>
               <h3 className="text-2xl sm:text-3xl font-serif font-black text-white leading-tight">
-                Pure Hand-Spun Pit-Loom Cottons
+                Traditional Men&apos;s Dhoti &amp; Handloom Wear
               </h3>
               <p className="text-xs sm:text-sm text-kora-200 mt-2 line-clamp-2 max-w-md">
-                Breathable 60s count organic shirts and relaxed Chettinad short kurtas dyed in natural fermented indigo.
+                Breathable art silk wedding dhotis, zari border kurtas, and festival outfits.
               </p>
               <div className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-amber-300 group-hover:text-white transition">
-                <span>Explore Cotton Collection</span>
+                <span>Explore Men&apos;s Collection</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
               </div>
             </div>
@@ -411,9 +555,9 @@ export default function HomePage() {
             className="group relative rounded-3xl overflow-hidden aspect-[16/10] sm:aspect-[4/3] bg-[#780016] shadow-lg border border-kora-300 block"
           >
             <img
-              src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80"
+              src="https://naachiyars.in/cdn/shop/files/Nachiyars_banner.jpg?v=1788243948"
               alt="Sensational Trend and Luxury Sarees"
-              className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-80"
+              className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-90"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#3d000b] via-[#3d000b]/40 to-transparent flex flex-col justify-end p-6 sm:p-10 text-white">
               <span className="inline-block bg-amber-400 text-indigo-950 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-fit mb-2">
@@ -474,61 +618,71 @@ export default function HomePage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredFeatured.map((product) => (
-              <div
-                key={product.id}
-                className="group relative bg-[#faf8f5] rounded-3xl overflow-hidden border border-kora-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-              >
-                {/* Product Image */}
-                <div className="relative aspect-[4/5] overflow-hidden bg-kora-200">
-                  <img
-                    src={product.img}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                  <div className="absolute top-3 left-3 bg-[#780016] text-amber-300 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow">
-                    {product.tag}
-                  </div>
-                  <div className="absolute top-3 right-3 bg-emerald-700 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded shadow">
-                    {product.discount}
-                  </div>
-                </div>
+            {filteredFeatured.map((product) => {
+              const primaryVariant = product.variants[0];
+              const primaryImg = product.images[0]?.url || "";
+              const price = primaryVariant?.price || 1499;
+              const mrp = primaryVariant?.mrp || Math.round(price * 1.3);
+              const discountPercent = Math.round(((mrp - price) / mrp) * 100);
 
-                {/* Product Info */}
-                <div className="p-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-indigo-900/60 uppercase tracking-widest block">
-                      {product.category}
-                    </span>
-                    <Link
-                      href={`/product/${product.slug}`}
-                      className="font-serif font-bold text-indigo-950 hover:text-[#780016] text-sm mt-1 line-clamp-1 block transition"
-                    >
-                      {product.name}
-                    </Link>
-                    <p className="text-[11px] text-indigo-900/70 mt-1 line-clamp-1">{product.fabric}</p>
-                  </div>
-
-                  {/* Pricing and CTA */}
-                  <div className="mt-4 pt-3 border-t border-kora-300 flex items-center justify-between">
-                    <div>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-base font-bold text-indigo-950 font-serif">₹{product.price}</span>
-                        <span className="text-xs text-indigo-900/50 line-through">₹{product.mrp}</span>
+              return (
+                <div
+                  key={product.id}
+                  className="group relative bg-[#faf8f5] rounded-3xl overflow-hidden border border-kora-300 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                >
+                  {/* Product Image */}
+                  <div className="relative aspect-[4/5] overflow-hidden bg-kora-200">
+                    <img
+                      src={primaryImg}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+                    <div className="absolute top-3 left-3 bg-[#780016] text-amber-300 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow">
+                      {product.gender === "MEN" ? "MEN'S WEAR" : "HANDLOOM"}
+                    </div>
+                    {discountPercent > 0 && (
+                      <div className="absolute top-3 right-3 bg-emerald-700 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded shadow">
+                        {discountPercent}% OFF
                       </div>
-                      <span className="text-[9px] text-emerald-800 font-semibold block">GST Inclusive</span>
+                    )}
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-indigo-900/60 uppercase tracking-widest block">
+                        {product.category?.name || "Authentic Ethnic"}
+                      </span>
+                      <Link
+                        href={`/product/${product.slug}`}
+                        className="font-serif font-bold text-indigo-950 hover:text-[#780016] text-sm mt-1 line-clamp-2 block transition"
+                      >
+                        {product.name}
+                      </Link>
+                      <p className="text-[11px] text-indigo-900/70 mt-1 line-clamp-1">{product.craftStory || product.description}</p>
                     </div>
 
-                    <button
-                      onClick={() => handleQuickAdd(product)}
-                      className="bg-indigo-950 hover:bg-[#780016] text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow hover:shadow-md"
-                    >
-                      Add to Cart
-                    </button>
+                    {/* Pricing and CTA */}
+                    <div className="mt-4 pt-3 border-t border-kora-300 flex items-center justify-between">
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-base font-bold text-indigo-950 font-serif">₹{price}</span>
+                          <span className="text-xs text-indigo-900/50 line-through">₹{mrp}</span>
+                        </div>
+                        <span className="text-[9px] text-emerald-800 font-semibold block">GST Inclusive</span>
+                      </div>
+
+                      <button
+                        onClick={() => handleQuickAdd(product)}
+                        className="bg-indigo-950 hover:bg-[#780016] text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow hover:shadow-md"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="text-center mt-10">
