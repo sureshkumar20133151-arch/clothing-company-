@@ -119,6 +119,21 @@ export default function CheckoutPage() {
         customerNotes: "Handle handloom package with care.",
       };
 
+      // 0. Sync local cart items to database cart if user is authenticated
+      if (isAuthenticated) {
+        try {
+          await api.delete("/cart");
+          for (const item of items) {
+            await api.post("/cart/items", {
+              productVariantId: item.variantId,
+              quantity: item.quantity,
+            });
+          }
+        } catch (syncErr) {
+          console.warn("Backend cart sync notice:", syncErr);
+        }
+      }
+
       // 1. Create order on the API
       let orderId = "";
       let orderNumber = "";

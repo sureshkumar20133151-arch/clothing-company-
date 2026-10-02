@@ -122,7 +122,7 @@ export default function ProductDetailPage() {
 
   const reviewsList = reviewsData?.data?.reviews || [];
   const averageRating = reviewsData?.data?.averageRating || 5.0;
-  const totalReviewsCount = reviewsData?.data?.count || 0;
+  const totalReviewsCount = reviewsData?.data?.totalReviews ?? reviewsData?.data?.count ?? 0;
 
   // Review Form State
   const [reviewRating, setReviewRating] = useState(5);
@@ -191,6 +191,13 @@ export default function ProductDetailPage() {
   );
   const [activeTab, setActiveTab] = useState<"craft" | "fabric" | "care">("craft");
   const [addedToast, setAddedToast] = useState(false);
+
+  React.useEffect(() => {
+    if (apiData?.data && apiData.data.variants && apiData.data.variants.length > 0) {
+      setSelectedVariant(apiData.data.variants[0]);
+      setSelectedImageIndex(0);
+    }
+  }, [apiData]);
 
   // Group variants by color & size
   const uniqueSizes = Array.from(new Set(product.variants.map((v) => v.size)));

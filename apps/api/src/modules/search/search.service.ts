@@ -67,14 +67,19 @@ export class SearchService {
       throw err;
     }
 
-    const suggestions: SearchSuggestionDTO[] = products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      thumbnail: p.images[0]?.url || "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80",
-      price: p.variants[0]?.price || 0,
-      categoryName: p.category?.name,
-    }));
+    const suggestions: (SearchSuggestionDTO & { image?: string; category?: string })[] = products.map((p) => {
+      const img = p.images[0]?.url || "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=600&q=80";
+      return {
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        thumbnail: img,
+        image: img,
+        price: p.variants[0]?.price || 0,
+        categoryName: p.category?.name,
+        category: p.category?.name,
+      };
+    });
 
     await RedisService.set(cacheKey, suggestions, 60); // 60s TTL
     return suggestions;
@@ -115,11 +120,9 @@ export class SearchService {
 
     // Gender filter
     if (options.gender && ["MEN", "WOMEN", "UNISEX"].includes(options.gender.toUpperCase())) {
-      where.OR = [
-        ...(where.OR || []),
-        { gender: options.gender.toUpperCase() as Gender },
-        { gender: "UNISEX" },
-      ];
+      where.gender = {
+        in: [options.gender.toUpperCase() as Gender, Gender.UNISEX],
+      };
     }
 
     // Variant filters (Size, Colour, Price)

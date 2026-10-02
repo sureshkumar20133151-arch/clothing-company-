@@ -160,7 +160,7 @@ function OrdersContent() {
     },
   });
 
-  const orders: OrderDTO[] = apiData?.data && apiData.data.length > 0 ? apiData.data : DEMO_ORDERS;
+  const orders: OrderDTO[] = Array.isArray(apiData?.data) ? apiData.data : DEMO_ORDERS;
 
   // Filter client-side if fallback demo orders are used
   const filteredOrders = orders.filter((o) => {

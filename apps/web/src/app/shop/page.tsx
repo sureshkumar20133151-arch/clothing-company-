@@ -224,7 +224,7 @@ function ShopContent() {
     staleTime: 60 * 1000,
   });
 
-  const products: ProductDTO[] = apiData?.data && apiData.data.length > 0 ? apiData.data : DEMO_PRODUCTS;
+  const products: ProductDTO[] = Array.isArray(apiData?.data) ? apiData.data : DEMO_PRODUCTS;
 
   // Filter client-side if fallback data is in use
   const filteredProducts = products.filter((p) => {

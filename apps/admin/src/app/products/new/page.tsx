@@ -101,6 +101,12 @@ export default function NewProductPage() {
     { id: "c4", name: "Handcrafted Overlays & Stoles" },
   ];
 
+  React.useEffect(() => {
+    if (categoriesData?.data?.length && !categoryId) {
+      setCategoryId(categoriesData.data[0].id);
+    }
+  }, [categoriesData, categoryId]);
+
   // Auto-generate slug from name
   const handleNameChange = (val: string) => {
     setName(val);

@@ -98,6 +98,7 @@ export class ReviewService {
       reviews,
       averageRating,
       totalReviews: totalApproved,
+      count: totalApproved,
       starBreakdown,
       meta: {
         page,

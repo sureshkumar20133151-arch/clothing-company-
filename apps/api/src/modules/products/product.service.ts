@@ -36,10 +36,9 @@ export class ProductService {
     }
 
     if (filters.gender) {
-      where.OR = [
-        { gender: filters.gender as Gender },
-        { gender: "UNISEX" },
-      ];
+      where.gender = {
+        in: [filters.gender as Gender, Gender.UNISEX],
+      };
     }
 
     if (filters.size || filters.color || filters.minPrice !== undefined || filters.maxPrice !== undefined) {

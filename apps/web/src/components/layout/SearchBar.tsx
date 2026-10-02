@@ -11,8 +11,10 @@ interface SearchSuggestion {
   id: string;
   name: string;
   slug: string;
-  category: string;
+  category?: string;
+  categoryName?: string;
   image?: string;
+  thumbnail?: string;
   price: number;
 }
 
@@ -145,43 +147,47 @@ export function SearchBar({ onClose, isModal = false }: SearchBarProps) {
                 Artisanal Matches
               </div>
               <ul className="divide-y divide-kora-100 max-h-80 overflow-y-auto">
-                {suggestions.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectSuggestion(item.slug)}
-                      className="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-kora-50 transition group"
-                    >
-                      {item.image ? (
-                        <div className="w-10 h-10 rounded-lg overflow-hidden relative bg-kora-100 shrink-0 border border-kora-200">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition"
-                          />
+                {suggestions.map((item) => {
+                  const imgUrl = item.thumbnail || item.image;
+                  const categoryLabel = item.categoryName || item.category || "Handloom";
+                  return (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectSuggestion(item.slug)}
+                        className="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-kora-50 transition group"
+                      >
+                        {imgUrl ? (
+                          <div className="w-10 h-10 rounded-lg overflow-hidden relative bg-kora-100 shrink-0 border border-kora-200">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={imgUrl}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-900 flex items-center justify-center text-xs font-bold shrink-0">
+                            IT
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-bold text-indigo-950 truncate group-hover:text-terracotta-600 transition">
+                            {item.name}
+                          </div>
+                          <div className="text-[10px] text-indigo-900/50 flex items-center gap-2 mt-0.5">
+                            <span className="truncate">{categoryLabel}</span>
+                            <span>•</span>
+                            <span className="font-semibold text-indigo-950">
+                              {formatINR(item.price)}
+                            </span>
+                          </div>
                         </div>
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-900 flex items-center justify-center text-xs font-bold shrink-0">
-                          IT
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold text-indigo-950 truncate group-hover:text-terracotta-600 transition">
-                          {item.name}
-                        </div>
-                        <div className="text-[10px] text-indigo-900/50 flex items-center gap-2 mt-0.5">
-                          <span className="truncate">{item.category}</span>
-                          <span>•</span>
-                          <span className="font-semibold text-indigo-950">
-                            {formatINR(item.price)}
-                          </span>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-indigo-900/30 group-hover:text-indigo-950 group-hover:translate-x-0.5 transition shrink-0" />
-                    </button>
-                  </li>
-                ))}
+                        <ArrowRight className="w-3.5 h-3.5 text-indigo-900/30 group-hover:text-indigo-950 group-hover:translate-x-0.5 transition shrink-0" />
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
 
               {/* View all search results link */}
