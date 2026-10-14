@@ -314,198 +314,119 @@ export default function HomePage() {
       </section>
 
       {/* ============================================================== */}
-      {/* 2. GRAND HERO BANNER SLIDER (Themed from Theni Anantham & Pothys) */}
+      {/* 2. NAACHIYARS FULL-WIDTH HERO BANNER SLIDER (Exact match to screenshot 1 & 2) */}
       {/* ============================================================== */}
-      <section className="relative overflow-hidden bg-[#200008] text-white py-10 sm:py-16 px-4 sm:px-6 lg:px-8 border-b-4 border-amber-400 transition-all duration-700">
-        {/* Background Image with Deep Overlay */}
+      <section className="relative w-full overflow-hidden bg-gray-900 aspect-[16/7] sm:aspect-[21/9] min-h-[380px] sm:min-h-[500px] flex items-center">
+        {/* Banner Slide 1 - "Style Made for You" (Temple / Pillars Background with Saree Models) */}
         <div
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-20 filter blur-[1px]"
-          style={{ backgroundImage: `url(${slide.bannerBg})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1c0006] via-[#3d000c]/90 to-[#1c0006]/95 pointer-events-none" />
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            currentSlide === 0 ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+          }`}
+        >
+          {/* Main Full-Width Photographic Banner */}
+          <img
+            src="https://naachiyars.in/cdn/shop/files/Nachiyars_banner.jpg?v=1788243948"
+            alt="Style Made for You - Naachiyars Sarees"
+            className="w-full h-full object-cover object-center"
+          />
 
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left Model Showcase (Real reference models) */}
-          <div className="hidden lg:grid col-span-3 grid-cols-2 gap-3">
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform -rotate-1 hover:rotate-0 transition duration-500 group bg-black/40">
-              <div className="w-full h-72 overflow-hidden">
-                <img
-                  src={slide.model1.img}
-                  alt={slide.model1.tag}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
-              <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                {slide.model1.tag}
-              </div>
-            </div>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform rotate-2 hover:rotate-0 transition duration-500 mt-6 group bg-black/40">
-              <div className="w-full h-72 overflow-hidden">
-                <img
-                  src={slide.model2.img}
-                  alt={slide.model2.tag}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
-              <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                {slide.model2.tag}
-              </div>
-            </div>
-          </div>
-
-          {/* Center Main Headline & Grand Offer Emblem (Like Theni Anantham) */}
-          <div className="col-span-1 lg:col-span-6 text-center flex flex-col items-center">
-            {/* Slider Switcher Dots */}
-            <div className="flex items-center gap-2 mb-3">
-              {HERO_SLIDES.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentSlide(idx)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    currentSlide === idx ? "w-8 bg-amber-400" : "w-2 bg-white/40 hover:bg-white/70"
-                  }`}
-                  aria-label={`Go to slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-
-            {/* Upper Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-300 text-xs font-bold tracking-widest uppercase mb-4 shadow">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>{slide.badge}</span>
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            </div>
-
-            {/* Regal Heading */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight leading-tight text-white uppercase drop-shadow-md">
-              {slide.title}
-            </h1>
-
-            {/* Cursive Subtitle */}
-            <p className="font-serif italic text-2xl sm:text-3xl text-amber-200 mt-1 mb-2 tracking-wide font-normal">
-              {slide.italicSub}
-            </p>
-
-            <p className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-white/80 mb-6">
-              {slide.tagline}
-            </p>
-
-            {/* Center Royal Gold / Maroon Discount Badge (Exact copy of screenshot badge) */}
-            <div className="relative bg-gradient-to-b from-[#3a000b] to-[#1a0005] border-2 border-amber-400 rounded-3xl p-6 sm:p-8 shadow-2xl max-w-md w-full my-2 text-center group">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-indigo-950 text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-md">
-                EXCLUSIVE OFFER
-              </div>
-
-              <div className="text-3xl sm:text-4xl font-serif font-black text-amber-300 tracking-tight my-1">
-                {slide.offerTitle}
-              </div>
-
-              <div className="mt-3 flex items-center justify-center gap-2">
-                <span className="text-xs text-amber-100 font-medium">USE CODE:</span>
-                <span className="bg-[#780016] border border-amber-300/60 text-amber-300 font-mono font-black text-base px-3 py-1 rounded-lg tracking-widest">
-                  WELCOME10
-                </span>
-                <button
-                  onClick={handleCopy}
-                  className="bg-amber-400 hover:bg-amber-300 text-indigo-950 p-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1"
-                  title="Copy Code"
+          {/* Right Floating Text Content Overlay matching Screenshot 1 */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/30 flex items-center justify-end px-6 sm:px-12 md:px-20 lg:px-28">
+            <div className="max-w-md sm:max-w-xl text-right sm:text-left mr-0 sm:mr-8 md:mr-16">
+              <h2
+                className="text-3xl sm:text-5xl md:text-6xl font-serif text-[#f5b842] drop-shadow-md font-bold tracking-tight italic"
+                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+              >
+                Style Made for You
+              </h2>
+              <p className="mt-2 sm:mt-3 text-sm sm:text-lg md:text-xl text-white font-medium drop-shadow leading-relaxed">
+                Explore premium sarees woven with heritage and heart.
+              </p>
+              <div className="mt-5 sm:mt-8">
+                <Link
+                  href="/shop?category=bengal-salem-cotton-sarees"
+                  className="inline-block border border-black/80 sm:border-gray-900 bg-transparent hover:bg-black hover:text-white text-black font-semibold text-xs sm:text-sm tracking-wider uppercase px-7 py-2.5 transition duration-300 shadow-sm"
                 >
-                  {copiedCode ? <Check className="w-4 h-4 text-emerald-800" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-
-              {copiedCode && (
-                <p className="text-[11px] text-amber-300 font-bold mt-2 animate-pulse">
-                  ✓ Code WELCOME10 copied to clipboard!
-                </p>
-              )}
-            </div>
-
-            {/* Action Buttons & Prev/Next Arrows */}
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-              <button
-                onClick={() => setCurrentSlide((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1))}
-                className="w-10 h-10 rounded-full border border-white/30 bg-black/40 hover:bg-[#780016] text-white flex items-center justify-center transition"
-                title="Previous Slide"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              <Link
-                href={slide.primaryCta.href}
-                className="bg-amber-400 text-indigo-950 hover:bg-amber-300 px-8 py-3.5 rounded-full font-bold transition text-xs sm:text-sm tracking-wider uppercase inline-flex items-center gap-2 shadow-xl hover:scale-105 active:scale-95"
-              >
-                {slide.primaryCta.label} <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href={slide.secondaryCta.href}
-                className="bg-white/10 hover:bg-white/20 border-2 border-white/40 text-white px-8 py-3.5 rounded-full font-bold transition text-xs sm:text-sm tracking-wider uppercase inline-flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
-              >
-                {slide.secondaryCta.label} <ArrowRight className="w-4 h-4" />
-              </Link>
-
-              <button
-                onClick={() => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length)}
-                className="w-10 h-10 rounded-full border border-white/30 bg-black/40 hover:bg-[#780016] text-white flex items-center justify-center transition"
-                title="Next Slide"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Right Model Showcase (Real reference models) */}
-          <div className="hidden lg:grid col-span-3 grid-cols-2 gap-3">
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform -rotate-2 hover:rotate-0 transition duration-500 group bg-black/40">
-              <div className="w-full h-72 overflow-hidden">
-                <img
-                  src={slide.model3.img}
-                  alt={slide.model3.tag}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
-              <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                {slide.model3.tag}
-              </div>
-            </div>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/50 transform rotate-1 hover:rotate-0 transition duration-500 mt-6 group bg-black/40">
-              <div className="w-full h-72 overflow-hidden">
-                <img
-                  src={slide.model4.img}
-                  alt={slide.model4.tag}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
-              <div className="p-2 bg-[#780016] text-center text-[10px] font-bold text-amber-300 tracking-wider">
-                {slide.model4.tag}
+                  SHOP NOW
+                </Link>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom 4 Feature Pillars (Exact match from screenshot footer) */}
-        <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          <div className="flex flex-col items-center justify-center p-2">
-            <span className="text-2xl mb-1">🌿</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">PREMIUM FABRICS</span>
-            <span className="text-[10px] text-white/70">100% Handloom Cotton &amp; Silk</span>
-          </div>
-          <div className="flex flex-col items-center justify-center p-2">
-            <span className="text-2xl mb-1">✨</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">TRENDING DESIGNS</span>
-            <span className="text-[10px] text-white/70">Rooted Heritage &amp; Modern Cuts</span>
-          </div>
-          <div className="flex flex-col items-center justify-center p-2">
-            <span className="text-2xl mb-1">🪡</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">EVERY OCCASION</span>
-            <span className="text-[10px] text-white/70">Festive, Casual &amp; Bridal</span>
-          </div>
-          <div className="flex flex-col items-center justify-center p-2">
-            <span className="text-2xl mb-1">🛡️</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-300">TRUSTED QUALITY</span>
-            <span className="text-[10px] text-white/70">Handloom Mark Certified</span>
+        {/* Banner Slide 2 - "The Art of Tradition" (Maroon Heritage Background with Seated Silk Saree Models) */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            currentSlide === 1 ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+          }`}
+        >
+          {/* Main Full-Width Photographic Banner */}
+          <img
+            src="https://naachiyars.in/cdn/shop/files/Nachiyars_banner1.jpg?v=1788243947"
+            alt="The Art of Tradition - Naachiyars Silk"
+            className="w-full h-full object-cover object-center"
+          />
+
+          {/* Left Text Content Overlay matching Screenshot 2 */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent flex items-center justify-start px-6 sm:px-12 md:px-20 lg:px-28">
+            <div className="max-w-md sm:max-w-xl text-left">
+              <h2
+                className="text-3xl sm:text-5xl md:text-6xl font-serif text-[#f5b842] drop-shadow-md font-bold tracking-tight italic"
+                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+              >
+                The Art of Tradition
+              </h2>
+              <p className="mt-2 sm:mt-3 text-sm sm:text-lg md:text-xl text-white font-medium drop-shadow leading-relaxed max-w-lg">
+                Premium saree collections blending tradition, luxury, comfort, and style.
+              </p>
+              <div className="mt-5 sm:mt-8">
+                <Link
+                  href="/shop?category=bengal-salem-cotton-sarees"
+                  className="inline-block border border-white hover:bg-white hover:text-black text-white font-semibold text-xs sm:text-sm tracking-wider uppercase px-7 py-2.5 transition duration-300 shadow-sm"
+                >
+                  SHOP NOW
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Floating "AI fitting room" pill on bottom-left (Exact from Screenshot 1 & 2) */}
+        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 bg-black/80 hover:bg-black text-white text-xs px-3 py-1.5 rounded border border-white/20 shadow-lg cursor-pointer transition">
+          <span className="text-sm">📷</span>
+          <span className="font-medium">AI fitting room</span>
+          <span className="text-gray-400 text-xs ml-1 hover:text-white">✕</span>
+        </div>
+
+        {/* Carousel Indicator Dots at bottom center */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+          {[0, 1].map((idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`rounded-full transition-all duration-300 ${
+                currentSlide === idx ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/50 hover:bg-white/80"
+              }`}
+              aria-label={`Slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Left / Right Nav Arrows */}
+        <button
+          onClick={() => setCurrentSlide((prev) => (prev === 0 ? 1 : 0))}
+          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/60 text-white flex items-center justify-center transition"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => setCurrentSlide((prev) => (prev === 0 ? 1 : 0))}
+          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/60 text-white flex items-center justify-center transition"
+          aria-label="Next Slide"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
       </section>
 
       {/* ============================================================== */}

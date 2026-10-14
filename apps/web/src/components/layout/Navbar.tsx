@@ -53,246 +53,233 @@ export function Navbar() {
 
   return (
     <>
-      {/* 1. Top Announcement Bar (Maroon/Burgundy Banner as in Theni Anantham) */}
-      <div className="bg-[#780016] text-white text-xs font-medium py-2 px-4 transition-all duration-500 overflow-hidden relative shadow-inner">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() =>
-              setAnnouncementIndex((prev) => (prev - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length)
-            }
-            className="text-white/60 hover:text-white px-2 hidden sm:block text-sm"
-            aria-label="Previous announcement"
-          >
-            ‹
-          </button>
-
-          <Link
-            href={ANNOUNCEMENTS[announcementIndex].link}
-            className="flex-1 text-center flex items-center justify-center gap-1.5 hover:underline tracking-wider uppercase text-[11px] sm:text-xs"
-          >
-            <span>{ANNOUNCEMENTS[announcementIndex].text}</span>
-            <ArrowRight className="w-3.5 h-3.5 ml-1" />
-          </Link>
-
-          <button
-            onClick={() => setAnnouncementIndex((prev) => (prev + 1) % ANNOUNCEMENTS.length)}
-            className="text-white/60 hover:text-white px-2 hidden sm:block text-sm"
-            aria-label="Next announcement"
-          >
-            ›
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Main Navigation Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-kora-300 shadow-sm transition">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          {/* Mobile menu trigger */}
+      {/* 1. Header (Navbar) - Naachiyars Style */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm transition">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+          
+          {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-indigo-950 hover:text-indigo-700"
+            className="lg:hidden p-2 text-gray-800 hover:text-black"
             aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
-          {/* Brand Logo (Regal Artisanal Badge) */}
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="group flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#780016] to-[#b3543b] text-amber-300 flex items-center justify-center font-serif font-black text-xl shadow-md border-2 border-amber-300/40">
-                இ
+          {/* Naachiyars Style Brand Logo */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Geometric warm orange/mustard stepped logo mark */}
+            <div className="flex flex-col gap-0.5 justify-center">
+              <div className="flex gap-0.5">
+                <div className="w-2.5 h-4 bg-[#e57a22] transform -skew-y-12 rounded-sm" />
+                <div className="w-2.5 h-6 bg-[#f39c12] transform -skew-y-12 rounded-sm -mt-1" />
+                <div className="w-2.5 h-4 bg-[#e57a22] transform -skew-y-12 rounded-sm" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-xl sm:text-2xl font-serif font-extrabold tracking-tight text-indigo-950 group-hover:text-[#780016] transition leading-none">
-                  INDIGO <span className="text-terracotta-500 font-sans font-light">&</span> THREAD
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-[#780016] font-sans">
+                  NAACHIYARS
                 </span>
-                <span className="text-[9px] tracking-widest uppercase text-indigo-900/60 font-semibold mt-1">
-                  Artisanal Handloom • India
-                </span>
+                <span className="text-[10px] text-gray-500 font-bold ml-0.5 align-super">®</span>
               </div>
+              <span className="text-[8px] sm:text-[9px] tracking-wider text-gray-700 font-medium -mt-0.5">
+                Silk | Textiles | Readymade
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation Links (Exact from User Screenshot) */}
+          <nav className="hidden lg:flex items-center space-x-7 text-[13px] font-semibold text-gray-800">
+            {/* Home */}
+            <Link
+              href="/"
+              className={`hover:text-[#780016] transition pb-1 border-b-2 ${
+                pathname === "/" ? "border-gray-900 text-black font-bold" : "border-transparent text-gray-700"
+              }`}
+            >
+              Home
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-6 text-[13px] font-semibold text-indigo-900 tracking-wide uppercase">
-              {/* New Arrivals */}
+            {/* Silk Saree */}
+            <Link
+              href="/shop?category=bengal-salem-cotton-sarees"
+              className="hover:text-[#780016] transition text-gray-700 hover:font-semibold"
+            >
+              Silk Saree
+            </Link>
+
+            {/* Sarees Dropdown */}
+            <div
+              className="relative group py-4"
+              onMouseEnter={() => setSareeDropdownOpen(true)}
+              onMouseLeave={() => setSareeDropdownOpen(false)}
+            >
               <Link
-                href="/shop?sort=newest"
-                className={`flex items-center gap-1 hover:text-[#780016] transition pb-1 border-b-2 ${
-                  pathname.includes("sort=newest") ? "border-[#780016] text-[#780016]" : "border-transparent"
-                }`}
+                href="/shop?category=bengal-salem-cotton-sarees"
+                className="flex items-center gap-1 hover:text-[#780016] transition text-gray-700"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                New Arrivals
+                <span>Sarees</span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-500 transition group-hover:rotate-180" />
               </Link>
 
-              {/* Best Sellers */}
-              <Link
-                href="/shop?featured=true"
-                className={`flex items-center gap-1 hover:text-[#780016] transition pb-1 border-b-2 ${
-                  pathname.includes("featured=true") ? "border-[#780016] text-[#780016]" : "border-transparent"
-                }`}
-              >
-                <Flame className="w-3.5 h-3.5 text-rose-500" />
-                Best Sellers
-              </Link>
-
-              {/* Sarees Dropdown */}
-              <div
-                className="relative group"
-                onMouseEnter={() => setSareeDropdownOpen(true)}
-                onMouseLeave={() => setSareeDropdownOpen(false)}
-              >
-                <Link
-                  href="/shop?category=bengal-salem-cotton-sarees"
-                  className="flex items-center gap-1 hover:text-[#780016] transition pb-1 border-b-2 border-transparent py-4"
-                >
-                  <span>Sarees</span>
-                  <ChevronDown className="w-3.5 h-3.5 transition group-hover:rotate-180" />
-                </Link>
-
-                {/* Saree Dropdown Menu */}
-                {sareeDropdownOpen && (
-                  <div className="absolute top-full left-0 w-72 bg-white rounded-2xl shadow-2xl border border-kora-300 py-3 px-2 z-50 animate-in fade-in slide-in-from-top-2">
-                    <Link
-                      href="/shop?category=bengal-salem-cotton-sarees"
-                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-kora-100 text-indigo-950 font-medium transition text-xs"
-                    >
-                      <div>
-                        <div className="font-bold">Salem Temple Border Sarees</div>
-                        <div className="text-[10px] text-indigo-900/60 lowercase">Pure Korvai 3-shuttle cotton</div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-indigo-400" />
-                    </Link>
-                    <Link
-                      href="/shop?category=womens-handloom-kurtas"
-                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-kora-100 text-indigo-950 font-medium transition text-xs"
-                    >
-                      <div>
-                        <div className="font-bold">Phulia Jamdani Handloom</div>
-                        <div className="text-[10px] text-indigo-900/60 lowercase">80s count hand-inlaid motifs</div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-indigo-400" />
-                    </Link>
-                    <Link
-                      href="/shop?gender=WOMEN"
-                      className="flex items-center justify-between p-2.5 rounded-xl hover:bg-kora-100 text-indigo-950 font-medium transition text-xs"
-                    >
-                      <div>
-                        <div className="font-bold">All Women&apos;s Festive Wear</div>
-                        <div className="text-[10px] text-indigo-900/60 lowercase">Sarees, kurtas &amp; dupattas</div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-indigo-400" />
-                    </Link>
-                    <div className="border-t border-kora-200 mt-1 pt-1.5 px-2.5">
-                      <Link
-                        href="/shop?category=bengal-salem-cotton-sarees"
-                        className="text-[11px] font-bold text-[#780016] hover:underline flex items-center gap-1"
-                      >
-                        View All Sarees <ArrowRight className="w-3 h-3" />
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Men's Collection */}
-              <Link
-                href="/shop?gender=MEN"
-                className={`hover:text-[#780016] transition pb-1 border-b-2 ${
-                  pathname.includes("MEN") ? "border-[#780016] text-[#780016]" : "border-transparent"
-                }`}
-              >
-                Men&apos;s Collection
-              </Link>
-
-              {/* Ready Made */}
-              <Link
-                href="/shop?gender=WOMEN"
-                className={`hover:text-[#780016] transition pb-1 border-b-2 ${
-                  pathname.includes("WOMEN") ? "border-[#780016] text-[#780016]" : "border-transparent"
-                }`}
-              >
-                Ready Made
-              </Link>
-
-              {/* Sale */}
-              <Link
-                href="/shop?onSale=true"
-                className="flex items-center gap-1 text-rose-600 hover:text-rose-700 transition font-bold"
-              >
-                <Tag className="w-3.5 h-3.5" />
-                Sale
-              </Link>
-            </nav>
-          </div>
-
-          {/* Right Action Icons (Matching Theni Anantham header) */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Currency Selector Pill */}
-            <div className="hidden md:flex items-center gap-1 text-[11px] font-bold tracking-wider text-indigo-900 bg-kora-200/80 px-2.5 py-1 rounded-full border border-kora-300">
-              <span>India | INR ₹</span>
+              {sareeDropdownOpen && (
+                <div className="absolute top-full left-0 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2.5 px-2 z-50 animate-in fade-in slide-in-from-top-1">
+                  <Link
+                    href="/shop?category=bengal-salem-cotton-sarees"
+                    className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg transition"
+                  >
+                    Kanchipuram Pure Silk Sarees
+                  </Link>
+                  <Link
+                    href="/shop?category=bengal-salem-cotton-sarees"
+                    className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg transition"
+                  >
+                    Banaras Digital &amp; Soft Silk
+                  </Link>
+                  <Link
+                    href="/shop?category=bengal-salem-cotton-sarees"
+                    className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg transition"
+                  >
+                    Salem Temple Border Sarees
+                  </Link>
+                  <Link
+                    href="/shop?category=bengal-salem-cotton-sarees"
+                    className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg transition"
+                  >
+                    Bridal Tissue Silk Sarees
+                  </Link>
+                </div>
+              )}
             </div>
 
+            {/* Heritage Cottons Dropdown */}
+            <div className="relative group py-4">
+              <Link
+                href="/shop?category=bengal-salem-cotton-sarees"
+                className="flex items-center gap-1 hover:text-[#780016] transition text-gray-700"
+              >
+                <span>Heritage Cottons</span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-500 transition group-hover:rotate-180" />
+              </Link>
+              <div className="hidden group-hover:block absolute top-full left-0 w-60 bg-white rounded-xl shadow-xl border border-gray-100 py-2.5 px-2 z-50">
+                <Link
+                  href="/shop?category=bengal-salem-cotton-sarees"
+                  className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg"
+                >
+                  Chettinad Cotton Sarees
+                </Link>
+                <Link
+                  href="/shop?category=bengal-salem-cotton-sarees"
+                  className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg"
+                >
+                  Bengal Handloom Cottons
+                </Link>
+                <Link
+                  href="/shop?category=bengal-salem-cotton-sarees"
+                  className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg"
+                >
+                  Jaipur Hand Block Prints
+                </Link>
+              </div>
+            </div>
+
+            {/* Cotton Collective Dropdown */}
+            <div className="relative group py-4">
+              <Link
+                href="/shop?category=womens-handloom-kurtas"
+                className="flex items-center gap-1 hover:text-[#780016] transition text-gray-700"
+              >
+                <span>Cotton Collective</span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-500 transition group-hover:rotate-180" />
+              </Link>
+              <div className="hidden group-hover:block absolute top-full left-0 w-60 bg-white rounded-xl shadow-xl border border-gray-100 py-2.5 px-2 z-50">
+                <Link
+                  href="/shop?category=womens-handloom-kurtas"
+                  className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg"
+                >
+                  Everyday Cotton Kurtis
+                </Link>
+                <Link
+                  href="/shop?category=womens-handloom-kurtas"
+                  className="block px-3 py-2 text-xs font-medium text-gray-700 hover:bg-amber-50 hover:text-[#780016] rounded-lg"
+                >
+                  Cotton Dupattas &amp; Stoles
+                </Link>
+              </div>
+            </div>
+
+            {/* Unstitched Suits */}
+            <Link
+              href="/shop?gender=WOMEN"
+              className="hover:text-[#780016] transition text-gray-700 hover:font-semibold"
+            >
+              Unstitched Suits
+            </Link>
+
+            {/* Mens Dothi */}
+            <Link
+              href="/shop?gender=MEN"
+              className="hover:text-[#780016] transition text-gray-700 hover:font-semibold"
+            >
+              Mens Dothi
+            </Link>
+          </nav>
+
+          {/* Right Action Icons (Search, User, Cart - Naachiyars style clean outline) */}
+          <div className="flex items-center space-x-3 sm:space-x-5 text-gray-800">
             {/* Search Trigger */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 text-indigo-950 hover:text-[#780016] transition"
+              className="p-1 hover:text-[#780016] transition"
               title="Search collection"
               aria-label="Search collection"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-5 h-5 stroke-[1.8]" />
             </button>
-
-            {/* Wishlist Icon */}
-            <Link
-              href="/wishlist"
-              className="relative p-2 text-indigo-950 hover:text-[#780016] transition"
-              title="Saved Wishlist"
-              aria-label="Saved Wishlist"
-            >
-              <Heart className="w-5 h-5" />
-              {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 inline-flex items-center justify-center bg-rose-500 text-white rounded-full text-[10px] font-bold w-4 h-4 shadow-sm">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
 
             {/* Account Profile */}
             {mounted && isAuthenticated && user ? (
               <Link
                 href="/account"
-                className="flex items-center gap-1.5 text-xs font-bold text-indigo-950 hover:text-[#780016] py-1.5 px-3 rounded-full bg-kora-200/80 border border-kora-300"
+                className="flex items-center gap-1 p-1 hover:text-[#780016] transition text-xs font-medium"
               >
-                <User className="w-4 h-4 text-terracotta-500" />
-                <span className="hidden sm:inline">{user.name.split(" ")[0]}</span>
+                <User className="w-5 h-5 stroke-[1.8]" />
+                <span className="hidden xl:inline">{user.name.split(" ")[0]}</span>
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="p-2 text-indigo-950 hover:text-[#780016] transition"
+                className="p-1 hover:text-[#780016] transition"
                 title="Sign In / Register"
                 aria-label="Sign In"
               >
-                <User className="w-5 h-5" />
+                <User className="w-5 h-5 stroke-[1.8]" />
               </Link>
             )}
 
             {/* Shopping Bag Cart Icon */}
             <button
               onClick={openDrawer}
-              className="relative p-2 text-indigo-950 hover:text-[#780016] transition"
+              className="relative p-1 hover:text-[#780016] transition"
               title="View Cart"
               aria-label="Shopping bag"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
               {totalQty > 0 && (
-                <span className="absolute top-1 right-1 inline-flex items-center justify-center bg-[#780016] text-white rounded-full text-[10px] font-bold w-4 h-4 shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center bg-[#780016] text-white rounded-full text-[10px] font-bold w-4 h-4 shadow-sm">
                   {totalQty}
                 </span>
               )}
             </button>
           </div>
+        </div>
+
+        {/* 2. Slim Maroon Banner strip right under the navbar (Exact from Naachiyars Screenshot) */}
+        <div className="bg-[#6b1426] text-white text-center py-2 px-4 shadow-inner">
+          <p className="text-xs sm:text-sm font-medium tracking-wide">
+            Prepaid orders only. 100% secure payments
+          </p>
         </div>
 
         {/* Search Bar Flyout */}
