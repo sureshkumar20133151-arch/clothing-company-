@@ -280,41 +280,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#faf8f5]">
       {/* ============================================================== */}
-      {/* 1. CIRCULAR STORY / CATEGORY BUBBLES (Instagram / Modern Mobile Style) */}
-      {/* ============================================================== */}
-      <section className="bg-white border-b border-kora-300 py-4 px-4 sm:px-6 lg:px-8 overflow-x-auto no-scrollbar shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-start sm:justify-center gap-4 sm:gap-8 min-w-max">
-          {CIRCULAR_STORIES.map((story) => (
-            <Link
-              key={story.title}
-              href={story.href}
-              className="group flex flex-col items-center text-center cursor-pointer transition transform hover:-translate-y-1"
-            >
-              <div className="relative p-1 rounded-full bg-gradient-to-tr from-[#780016] via-amber-400 to-[#b3543b] shadow-md group-hover:shadow-lg transition">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-white bg-kora-200">
-                  <img
-                    src={story.img}
-                    alt={story.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                  />
-                </div>
-                {story.badge && (
-                  <span className="absolute -bottom-1 -right-1 bg-[#780016] text-amber-300 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded-full border border-amber-300 shadow">
-                    {story.badge}
-                  </span>
-                )}
-              </div>
-              <span className="mt-2 text-xs font-bold text-indigo-950 group-hover:text-[#780016] transition">
-                {story.title}
-              </span>
-              <span className="text-[10px] text-indigo-900/60 font-medium">{story.tag}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ============================================================== */}
-      {/* 2. NAACHIYARS FULL-WIDTH HERO BANNER SLIDER (Exact match to screenshot 1 & 2) */}
+      {/* 1. NAACHIYARS FULL-WIDTH HERO BANNER SLIDER (Exact match to screenshot 1 & 2) */}
       {/* ============================================================== */}
       <section className="relative w-full overflow-hidden bg-gray-900 aspect-[16/7] sm:aspect-[21/9] min-h-[380px] sm:min-h-[500px] flex items-center">
         {/* Banner Slide 1 - "Style Made for You" (Temple / Pillars Background with Saree Models) */}
